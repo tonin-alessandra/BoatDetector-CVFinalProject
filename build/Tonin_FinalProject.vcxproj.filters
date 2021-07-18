@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\ASUS\Documents\magistrale\first_year\computer_vision\final_project\Tonin_FinalProject\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\ASUS\Documents\magistrale\first_year\computer_vision\final_project\Tonin_FinalProject\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{ED4CCE9D-0A0D-3561-8D19-985A190EA57A}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

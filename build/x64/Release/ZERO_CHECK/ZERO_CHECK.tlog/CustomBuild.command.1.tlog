@@ -1,0 +1,10 @@
+^C:\USERS\ASUS\DOCUMENTS\MAGISTRALE\FIRST_YEAR\COMPUTER_VISION\FINAL_PROJECT\TONIN_FINALPROJECT\BUILD\CMAKEFILES\2593C1A4554AA35D04EA979133FFBE85\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject -BC:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/build/Tonin_FinalProject.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\ASUS\Documents\magistrale\first_year\computer_vision\final_project\Tonin_FinalProject\build\CMakeFiles\2593c1a4554aa35d04ea979133ffbe85\PACKAGE_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{817C7FD2-CCBE-331C-A8B0-85668F8BCD18}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

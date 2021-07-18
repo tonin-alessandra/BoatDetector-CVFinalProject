@@ -1,0 +1,38 @@
+# CMake generation dependency list for this directory.
+C:/Program Files/CMake/share/cmake-3.20/Modules/CMakeCInformation.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/CMakeCXXInformation.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/CMakeCommonLanguageInclude.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/CMakeGenericSystem.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/CMakeInitializeConfigs.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/CMakeLanguageInformation.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/CMakeRCInformation.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/CMakeSystemSpecificInformation.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/CMakeSystemSpecificInitialize.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/CPack.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/CPackComponent.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/CTest.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/CTestTargets.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/CTestUseLaunchers.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/Compiler/CMakeCommonCompilerMacros.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/Compiler/MSVC-C.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/Compiler/MSVC-CXX.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/DartConfiguration.tcl.in
+C:/Program Files/CMake/share/cmake-3.20/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/FindPackageMessage.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/Platform/Windows-MSVC-C.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/Platform/Windows-MSVC-CXX.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/Platform/Windows-MSVC.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/Platform/Windows.cmake
+C:/Program Files/CMake/share/cmake-3.20/Modules/Platform/WindowsPaths.cmake
+C:/Program Files/CMake/share/cmake-3.20/Templates/CPackConfig.cmake.in
+C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/CMakeLists.txt
+C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/build/CMakeFiles/3.20.0-rc3/CMakeCCompiler.cmake
+C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/build/CMakeFiles/3.20.0-rc3/CMakeCXXCompiler.cmake
+C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/build/CMakeFiles/3.20.0-rc3/CMakeRCCompiler.cmake
+C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/build/CMakeFiles/3.20.0-rc3/CMakeSystem.cmake
+C:/opencv/build/OpenCVConfig-version.cmake
+C:/opencv/build/OpenCVConfig.cmake
+C:/opencv/build/x64/vc15/lib/OpenCVConfig.cmake
+C:/opencv/build/x64/vc15/lib/OpenCVModules-debug.cmake
+C:/opencv/build/x64/vc15/lib/OpenCVModules-release.cmake
+C:/opencv/build/x64/vc15/lib/OpenCVModules.cmake
