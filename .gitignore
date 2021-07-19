@@ -1,3 +1,7 @@
+# Project folders
+/results/
+/build/
+
 ### C++ ###
 # Prerequisites
 *.d
@@ -97,3 +101,4 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+results/

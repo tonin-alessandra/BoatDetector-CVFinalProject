@@ -162,13 +162,13 @@ void test_trained_detector( String obj_det_filename, String test_dir, String vid
         }
         vector< Rect > detections;
         vector< double > foundWeights;
-        hog.detectMultiScale( img, detections, foundWeights);
+        hog.detectMultiScale( img, detections, foundWeights, 0.5, Size(3,3));
         for ( size_t j = 0; j < detections.size(); j++ )
         {
             Scalar color = Scalar( 0, foundWeights[j] * foundWeights[j] * 200, 0 );
             rectangle( img, detections[j], color, img.cols / 400 + 1 );
         }
-        imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/venice/res" + to_string(i) + ".jpg", img);
+        imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/resk" + to_string(i) + ".jpg", img);
         //imshow( obj_det_filename, img );
         //if( waitKey( delay ) == 27 )
         //{
@@ -214,8 +214,8 @@ int main( int argc, char** argv )
     bool flip_samples = false;
     if ( test_detector )
     {
-        test_trained_detector( obj_det_filename, test_dirv, videofilename );
-        //test_trained_detector( obj_det_filename, test_dirv, videofilename );
+        test_trained_detector( obj_det_filename, test_dirk, videofilename );
+        //test_trained_detector( obj_det_filename, test_dirk, videofilename );
 
         exit( 0 );
     }
@@ -303,7 +303,7 @@ int main( int argc, char** argv )
         for ( size_t i = 0; i < full_neg_lst.size(); i++ )
         {
             if ( full_neg_lst[i].cols >= pos_image_size.width && full_neg_lst[i].rows >= pos_image_size.height )
-                my_hog.detectMultiScale( full_neg_lst[i], detections, foundWeights);
+                my_hog.detectMultiScale( full_neg_lst[i], detections, foundWeights, 0.5, Size(3,3));
             else
                 detections.clear();
             for ( size_t j = 0; j < detections.size(); j++ )
