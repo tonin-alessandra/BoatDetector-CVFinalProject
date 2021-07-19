@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Site BuildName="Win32-MSBuild"
+	BuildStamp="20210719-1136-Experimental"
+	Name="LAPTOP-6MQ30C37"
+	Generator="ctest-3.20.0-rc3"
+	CompilerName="C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/VC/Tools/MSVC/14.28.29910/bin/Hostx64/x64/cl.exe"
+	CompilerVersion="19.28.29910.0"
+	OSName="Windows"
+	Hostname="LAPTOP-6MQ30C37"
+	OSRelease=" Personal"
+	OSVersion=" (Build 19043)"
+	OSPlatform="AMD64"
+	Is64Bits="1"
+	VendorString="GenuineIntel"
+	VendorID="Intel Corporation"
+	FamilyID="6"
+	ModelID="14"
+	ProcessorCacheSize="-1"
+	NumberOfLogicalCPU="12"
+	NumberOfPhysicalCPU="6"
+	TotalVirtualMemory="25268"
+	TotalPhysicalMemory="16231"
+	LogicalProcessorsPerPhysical="2"
+	ProcessorClockFrequency="2208"
+	>
+	<Testing>
+		<StartDateTime>Jul 19 13:36 ora legale Europa occidentale</StartDateTime>
+		<StartTestTime>1626694571</StartTestTime>
+		<TestList/>
+		<EndDateTime>Jul 19 13:36 ora legale Europa occidentale</EndDateTime>
+		<EndTestTime>1626694571</EndTestTime>
+		<ElapsedMinutes>0</ElapsedMinutes>
+	</Testing>
+</Site>
