@@ -97,5 +97,5 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-results/
-build/
+results
+build
