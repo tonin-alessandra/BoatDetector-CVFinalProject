@@ -168,7 +168,7 @@ void test_trained_detector( String obj_det_filename, String test_dir, String vid
             Scalar color = Scalar( 0, foundWeights[j] * foundWeights[j] * 200, 0 );
             rectangle( img, detections[j], color, img.cols / 400 + 1 );
         }
-        imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/resk" + to_string(i) + ".jpg", img);
+        imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/res" + to_string(i) + ".jpg", img);
         //imshow( obj_det_filename, img );
         //if( waitKey( delay ) == 27 )
         //{
@@ -214,7 +214,7 @@ int main( int argc, char** argv )
     bool flip_samples = false;
     if ( test_detector )
     {
-        test_trained_detector( obj_det_filename, test_dirk, videofilename );
+        test_trained_detector( obj_det_filename, test_dirv, videofilename );
         //test_trained_detector( obj_det_filename, test_dirk, videofilename );
 
         exit( 0 );
