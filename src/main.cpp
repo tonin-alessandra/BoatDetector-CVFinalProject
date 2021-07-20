@@ -11,6 +11,8 @@
 #include "opencv2/videoio.hpp"
 #include <iostream>
 #include <time.h>
+#include <src/Preprocessing.cpp>
+
 using namespace cv;
 using namespace cv::ml;
 using namespace std;
@@ -168,7 +170,7 @@ void test_trained_detector( String obj_det_filename, String test_dir, String vid
             Scalar color = Scalar( 0, foundWeights[j] * foundWeights[j] * 200, 0 );
             rectangle( img, detections[j], color, img.cols / 400 + 1 );
         }
-        imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/res" + to_string(i) + ".jpg", img);
+        imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/resk" + to_string(i) + ".jpg", img);
         //imshow( obj_det_filename, img );
         //if( waitKey( delay ) == 27 )
         //{
@@ -204,11 +206,12 @@ int main( int argc, char** argv )
     String test_dirk = "C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/FINAL_DATASET/FINAL_DATASET/TEST_DATASET/kaggle";
     String test_dirv = "C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/FINAL_DATASET/FINAL_DATASET/TEST_DATASET/venice";
 
+    Preprocessing preprocessor = Preprocessing();
     String obj_det_filename = "HOGboats.xml";
     String videofilename = parser.get< String >( "tv" );
     int detector_width = parser.get< int >( "dw" );
     int detector_height = parser.get< int >( "dh" );
-    bool test_detector = true;
+    bool test_detector = false;
     bool train_twice = true;
     bool visualization = false;
     bool flip_samples = false;
@@ -231,6 +234,7 @@ int main( int argc, char** argv )
     vector< int > labels;
     clog << "Positive images are being loaded..." ;
     load_images( pos_dir, pos_lst, visualization );
+    preprocessor.equalizeImgs(pos_lst, pos_lst);
 
     if ( pos_lst.size() > 0 )
     {
