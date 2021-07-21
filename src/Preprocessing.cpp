@@ -48,41 +48,43 @@ void Preprocessing::loadImgs(const String &path, vector<Mat> &imgs)
 */
 void Preprocessing::equalizeImgs(vector<Mat> imgs, vector<Mat> eqImgs)
 {
-    Mat img;
     for (int i = 0; i < imgs.size(); i++)
     {
-        img = imgs[i];
-        vector<Mat> rgb_channels;
-        split(img, rgb_channels);
-        Mat eq_r_channel, eq_g_channel, eq_b_channel;
-        equalizeHist(rgb_channels[0], eq_r_channel);
-        equalizeHist(rgb_channels[1], eq_g_channel);
-        equalizeHist(rgb_channels[2], eq_b_channel);
-        vector<Mat> equal_channels;
-        equal_channels.push_back(eq_r_channel);
-        equal_channels.push_back(eq_g_channel);
-        equal_channels.push_back(eq_b_channel);
-        Mat equal_image;
-        merge(equal_channels, equal_image);
-        /*cvtColor(img, img, COLOR_BGR2GRAY);
-        Mat img2;
-        equalizeHist(img, img2);
-        cvtColor(img2, img2, COLOR_GRAY2BGR);*/
-        eqImgs.push_back(equal_image);
+        Mat img = imgs[i];
+        cvtColor(img, img, COLOR_BGR2GRAY);
+        equalizeHist(img, img);
+        cvtColor(img, img, COLOR_GRAY2BGR);
+        eqImgs.push_back(img);
     }
 };
 
 /**
     Function to remove noise
+    @param imgs The vector of images to be denoised.
+    @param denoisImgs The vector of denoised images.    
 */
-void denoiseImgs(vector<Mat> imgs){};
+void Preprocessing::denoiseImgs(vector<Mat> imgs, vector<Mat> denoisImgs)
+{
+    for (int i = 0; i < imgs.size(); i++)
+    {
+        //GaussianBlur(imgs[i], imgs[i], Size(0,0), 10);
+        Mat img = imgs[i];
+        fastNlMeansDenoisingColored(img, img);
+        denoisImgs.push_back(img);
+    }
+};
 
 /**
-    Function to resize images
+    Function to resize a set of images.
+    @param imgs The vector of images to be resized.
+    @param resizedImgs The vector of resized images.
+    @param newSize The new size to give to images.
 */
-void resizeImgs(vector<Mat> imgs){};
-
-/**
-    Function to rename images
-*/
-//void renameImgs(vector<Mat> images){};
+void Preprocessing::resizeImgs(vector<Mat> imgs, vector<Mat> resizedImgs, Size newSize)
+{
+    for (int i = 0; i < imgs.size(); i++)
+    {
+        resize(imgs[i], imgs[i], newSize);
+        resizedImgs.push_back(imgs[i]);
+    }
+};

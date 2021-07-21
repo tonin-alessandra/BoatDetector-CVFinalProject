@@ -13,7 +13,6 @@ class Preprocessing
     // Data
 
 protected:
-
     // Methods
 
 public:
@@ -24,14 +23,11 @@ public:
     void loadImgs(const String &dirname, vector<Mat> &images);
 
     // Function to equalize images.
-    void equalizeImgs(vector<Mat> images, vector<Mat> dstImgs);
+    void equalizeImgs(vector<Mat> images, vector<Mat> equalized);
 
     //Function to remove noise
-    void denoiseImgs(vector<Mat> images);
+    void denoiseImgs(vector<Mat> images, vector<Mat> denoised);
 
     //Function to resize images
-    void resizeImgs(vector<Mat> images);
-
-    //Function to rename images
-    //void renameImgs(vector<Mat> images);
+    void resizeImgs(vector<Mat> images, vector<Mat> resized, Size size);
 };
