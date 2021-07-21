@@ -23,68 +23,55 @@ FeaturesExtraction::FeaturesExtraction()
 }
 
 /**
- * Extract HOG features from the given set of images.
+    Extract HOG features from the given set of images.
 */
-void FeaturesExtraction::extractHOG(vector<Mat> posImages, vector<Mat> negImages)
+void FeaturesExtraction::extractHOG(const Size wsize, const vector<Mat> &img_lst, vector<Mat> &gradient_lst, bool use_flip)
 {
-    Mat sample_feature_mat;
-    Mat sample_label_mat;
-    int feature_dim;
-
-    HOGDescriptor *hog = new HOGDescriptor(Size(64, 128), Size(16, 16), Size(8, 8), Size(8, 8), 9);
-    //HOGDescriptor *hog = new HOGDescriptor();
-
-    //pos
-    for (int i = 0; i < posImages.size(); ++i)
+    HOGDescriptor hog;
+    hog.winSize = wsize;
+    Mat gray;
+    vector<float> descriptors;
+    for (size_t i = 0; i < img_lst.size(); i++)
     {
-        Mat train_data(64, 128, CV_32FC1);
-        resize(posImages[i], train_data, Size(64, 128));
-        vector<float> descriptor;
-        hog->compute(train_data, descriptor, Size(8, 8));
-        if (i == 0)
+        if (img_lst[i].cols >= wsize.width && img_lst[i].rows >= wsize.height)
         {
-            feature_dim = descriptor.size();
-            sample_feature_mat = Mat::zeros(posImages.size() + negImages.size(), feature_dim, CV_32FC1);
-            sample_label_mat = Mat::zeros(posImages.size() + negImages.size(), 1, CV_32SC1);
+            Rect r = Rect((img_lst[i].cols - wsize.width) / 2,
+                          (img_lst[i].rows - wsize.height) / 2,
+                          wsize.width,
+                          wsize.height);
+            cvtColor(img_lst[i](r), gray, COLOR_BGR2GRAY);
+            hog.compute(gray, descriptors, Size(8, 8), Size(0, 0));
+            gradient_lst.push_back(Mat(descriptors).clone());
+            if (use_flip)
+            {
+                flip(gray, gray, 1);
+                hog.compute(gray, descriptors, Size(8, 8), Size(0, 0));
+                gradient_lst.push_back(Mat(descriptors).clone());
+            }
         }
-        float *pf = sample_feature_mat.ptr<float>(i);
-        int *pl = sample_label_mat.ptr<int>(i);
-        for (int j = 0; j < feature_dim; ++j)
-        {
-            *pf++ = descriptor[j];
-        }
-        *pl++ = 1;
     }
-    cout<<"positive done";
-    //neg
-    for (int i = 0; i < negImages.size(); ++i) {
-		Mat train_data(64, 128, CV_32FC1);
-		resize(negImages[i], train_data, Size(64, 128));
-		vector<float>descriptor;
-		hog->compute(train_data, descriptor, Size(8, 8));
-		float *pf = sample_feature_mat.ptr<float>(i + posImages.size());
-		int *pl = sample_label_mat.ptr<int>(i + posImages.size());
-		for (int j = 0; j < feature_dim; ++j) {
-			*pf++ = descriptor[j];
-		}
-		*pl++ = -1;
-	}
-    cout<<"negative done";
-
-sample_feature = sample_feature_mat;
-sample_label = sample_label_mat;
 };
-
-/**
- * //write comment
+/*
+    Function to convert extracted features in order to be used as training data for the models.
 */
-Mat FeaturesExtraction::getFeature(){
-    return sample_feature;
-};
-
-/**
- * //write comment
-*/  
-Mat FeaturesExtraction::getLabel(){
-    return sample_label;
-};;
+void FeaturesExtraction::convert_to_ml(const vector<Mat> &train_samples, Mat &trainData)
+{
+    //--Convert data
+    const int rows = (int)train_samples.size();
+    const int cols = (int)std::max(train_samples[0].cols, train_samples[0].rows);
+    Mat tmp(1, cols, CV_32FC1); //< used for transposition if needed
+    trainData = Mat(rows, cols, CV_32FC1);
+    for (size_t i = 0; i < train_samples.size(); ++i)
+    {
+        CV_Assert(train_samples[i].cols == 1 || train_samples[i].rows == 1);
+        if (train_samples[i].cols == 1)
+        {
+            transpose(train_samples[i], tmp);
+            tmp.copyTo(trainData.row((int)i));
+        }
+        else if (train_samples[i].rows == 1)
+        {
+            train_samples[i].copyTo(trainData.row((int)i));
+        }
+    }
+}

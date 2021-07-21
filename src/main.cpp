@@ -12,15 +12,16 @@
 #include <iostream>
 #include <time.h>
 #include <src/Preprocessing.cpp>
+#include <src/FeaturesExtraction.cpp>
 
 using namespace cv;
 using namespace cv::ml;
 using namespace std;
 vector<float> get_svm_detector(const Ptr<SVM> &svm);
-void convert_to_ml(const std::vector<Mat> &train_samples, Mat &trainData);
+//void convert_to_ml(const std::vector<Mat> &train_samples, Mat &trainData);
 void load_images(const String &dirname, vector<Mat> &img_lst, bool showImages);
 void sample_neg(const vector<Mat> &full_neg_lst, vector<Mat> &neg_lst, const Size &size);
-void computeHOGs(const Size wsize, const vector<Mat> &img_lst, vector<Mat> &gradient_lst, bool use_flip);
+//void computeHOGs(const Size wsize, const vector<Mat> &img_lst, vector<Mat> &gradient_lst, bool use_flip);
 void test_trained_detector(String obj_det_filename, String test_dir, String videofilename);
 vector<float> get_svm_detector(const Ptr<SVM> &svm)
 {
@@ -44,7 +45,7 @@ vector<float> get_svm_detector(const Ptr<SVM> &svm)
 * TrainData is a matrix of size (#samples x max(#cols,#rows) per samples), in 32FC1.
 * Transposition of samples are made if needed.
 */
-void convert_to_ml(const vector<Mat> &train_samples, Mat &trainData)
+/*void convert_to_ml(const vector<Mat> &train_samples, Mat &trainData)
 {
     //--Convert data
     const int rows = (int)train_samples.size();
@@ -64,7 +65,7 @@ void convert_to_ml(const vector<Mat> &train_samples, Mat &trainData)
             train_samples[i].copyTo(trainData.row((int)i));
         }
     }
-}
+}*/
 void load_images(const String &dirname, vector<Mat> &img_lst, bool showImages = false)
 {
     vector<String> files;
@@ -102,7 +103,7 @@ void sample_neg(const vector<Mat> &full_neg_lst, vector<Mat> &neg_lst, const Siz
             neg_lst.push_back(roi.clone());
         }
 }
-void computeHOGs(const Size wsize, const vector<Mat> &img_lst, vector<Mat> &gradient_lst, bool use_flip)
+/*void computeHOGs(const Size wsize, const vector<Mat> &img_lst, vector<Mat> &gradient_lst, bool use_flip)
 {
     HOGDescriptor hog;
     hog.winSize = wsize;
@@ -127,7 +128,7 @@ void computeHOGs(const Size wsize, const vector<Mat> &img_lst, vector<Mat> &grad
             }
         }
     }
-}
+}*/
 void test_trained_detector(String obj_det_filename, String test_dir, String videofilename)
 {
     cout << "Testing trained detector..." << endl;
@@ -169,7 +170,7 @@ void test_trained_detector(String obj_det_filename, String test_dir, String vide
             Scalar color = Scalar(0, foundWeights[j] * foundWeights[j] * 200, 0);
             rectangle(img, detections[j], color, img.cols / 400 + 1);
         }
-        imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/res" + to_string(i) + ".jpg", img);
+        imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/resk" + to_string(i) + ".jpg", img);
         //imshow( obj_det_filename, img );
         //if( waitKey( delay ) == 27 )
         //{
@@ -205,11 +206,12 @@ int main(int argc, char **argv)
     String test_dirv = "C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/FINAL_DATASET/FINAL_DATASET/TEST_DATASET/venice";
 
     Preprocessing preprocessor = Preprocessing();
+    FeaturesExtraction hogExtractor = FeaturesExtraction();
     String obj_det_filename = "HOGboats.xml";
     String videofilename = parser.get<String>("tv");
     int detector_width = parser.get<int>("dw");
     int detector_height = parser.get<int>("dh");
-    bool test_detector = true;
+    bool test_detector = false;
     bool train_twice = true;
     bool visualization = false;
     bool flip_samples = false;
@@ -235,7 +237,7 @@ int main(int argc, char **argv)
     clog << "Positive images are being loaded...";
     load_images(pos_dir, pos_lst, visualization);
     //preprocessor.equalizeImgs(pos_lst, pos_lst);
-    preprocessor.denoiseImgs(pos_lst, pos_lst);
+    //preprocessor.denoiseImgs(pos_lst, pos_lst);
 
     if (pos_lst.size() > 0)
     {
@@ -266,24 +268,24 @@ int main(int argc, char **argv)
     clog << "Negative images are being loaded...";
     load_images(neg_dir, full_neg_lst, visualization);
     //preprocessor.equalizeImgs(full_neg_lst, full_neg_lst);
-    preprocessor.denoiseImgs(full_neg_lst, full_neg_lst);
+    //preprocessor.denoiseImgs(full_neg_lst, full_neg_lst);
     clog << "...[done] " << full_neg_lst.size() << " files." << endl;
     clog << "Negative images are being processed...";
     //sample_neg( full_neg_lst, neg_lst, pos_image_size );
     clog << "...[done] " << neg_lst.size() << " files." << endl;
     clog << "Histogram of Gradients are being calculated for positive images...";
-    computeHOGs(pos_image_size, pos_lst, gradient_lst, flip_samples);
+    hogExtractor.extractHOG(pos_image_size, pos_lst, gradient_lst, flip_samples);
     size_t positive_count = gradient_lst.size();
     labels.assign(positive_count, +1);
     clog << "...[done] ( positive images count : " << positive_count << " )" << endl;
     clog << "Histogram of Gradients are being calculated for negative images...";
-    computeHOGs(pos_image_size, full_neg_lst, gradient_lst, flip_samples);
+    hogExtractor.extractHOG(pos_image_size, full_neg_lst, gradient_lst, flip_samples);
     size_t negative_count = gradient_lst.size() - positive_count;
     labels.insert(labels.end(), negative_count, -1);
     CV_Assert(positive_count < labels.size());
     clog << "...[done] ( negative images count : " << negative_count << " )" << endl;
     Mat train_data;
-    convert_to_ml(gradient_lst, train_data);
+    hogExtractor.convert_to_ml(gradient_lst, train_data);
     clog << "Training SVM...";
     Ptr<SVM> svm = SVM::create();
     /* Default values to train SVM */
@@ -332,18 +334,18 @@ int main(int argc, char **argv)
         clog << "...[done]" << endl;
         gradient_lst.clear();
         clog << "Histogram of Gradients are being calculated for positive images...";
-        computeHOGs(pos_image_size, pos_lst, gradient_lst, flip_samples);
+        hogExtractor.extractHOG(pos_image_size, pos_lst, gradient_lst, flip_samples);
         positive_count = gradient_lst.size();
         clog << "...[done] ( positive count : " << positive_count << " )" << endl;
         clog << "Histogram of Gradients are being calculated for negative images...";
-        computeHOGs(pos_image_size, full_neg_lst, gradient_lst, flip_samples);
+        hogExtractor.extractHOG(pos_image_size, full_neg_lst, gradient_lst, flip_samples);
         negative_count = gradient_lst.size() - positive_count;
         clog << "...[done] ( negative count : " << negative_count << " )" << endl;
         labels.clear();
         labels.assign(positive_count, +1);
         labels.insert(labels.end(), negative_count, -1);
         clog << "Training SVM again...";
-        convert_to_ml(gradient_lst, train_data);
+        hogExtractor.convert_to_ml(gradient_lst, train_data);
         svm->train(train_data, ROW_SAMPLE, labels);
         clog << "...[done]" << endl;
     }
