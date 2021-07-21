@@ -21,7 +21,7 @@ public:
     Detection();
 
     //Create and train svm
-    void createSVM(Mat feature, Mat label);
+    Ptr<SVM> createSVM(Mat features, vector<int> labels);
 
     
     //Load and test image
@@ -29,10 +29,18 @@ public:
 
     //Get found rectangles
     vector<Rect> getRects();
+    
+    //Get svm (example code)
+    vector<float> get_svm_detector(const Ptr<SVM> &svm);
+
+    //Test the trained detector 
+    void testTrainedDetector(String obj_det_filename, String test_dir);
 
 private:
     //Load trained svm model
     void loadSVM(String path);
     // Draw rectangles to identify detected objects
     void drawRect(Mat img, vector<Rect> rects);
+
+    
 };

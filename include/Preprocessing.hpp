@@ -20,7 +20,7 @@ public:
     Preprocessing();
 
     //Function to load images
-    void loadImgs(const String &dirname, vector<Mat> &images);
+    void loadImages(const String &dirname, vector<Mat> &images);
 
     // Function to equalize images.
     void equalizeImgs(vector<Mat> images, vector<Mat> equalized);
@@ -29,5 +29,5 @@ public:
     void denoiseImgs(vector<Mat> images, vector<Mat> denoised);
 
     //Function to resize images
-    void resizeImgs(vector<Mat> images, vector<Mat> resized, Size size);
+    vector<Mat> resizeImgs(vector<Mat> images, Size size);
 };

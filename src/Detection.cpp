@@ -23,7 +23,7 @@ Detection::Detection(){};
 /**
 	Create svm and train it
 */
-void Detection::createSVM(Mat feature, Mat label)
+/*void Detection::createSVM(Mat feature, Mat label)
 {
 	Ptr<SVM> svm = SVM::create();
 	svm->setType(SVM::C_SVC);
@@ -36,7 +36,7 @@ void Detection::createSVM(Mat feature, Mat label)
 	svm->save("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/SVM_Model.xml");
 	cout << "train done" << endl;
 	svmModel = svm;
-};
+};*/
 
 /**
  * Load a trained svm model and its important parameters
@@ -77,63 +77,78 @@ void Detection::loadSVM(String svmPath)
 	svmVec = vec;
 };
 
-/*
-	Test the detector on an image
+
+//--------------------------------------------------------------------------------
+/**
+	Create svm and train it
 */
-void Detection::testImage(String svmPath, vector<Mat> testImages, String result)
+Ptr<SVM> Detection::createSVM(Mat data, vector<int> label)
 {
-	loadSVM(svmPath);
-	HOGDescriptor hogTest(Size(64, 128), Size(16, 16), Size(8, 8), Size(8, 8), 9);
-	//HOGDescriptor hogTest;
-	hogTest.setSVMDetector(svmVec);
-	Mat img;
-	vector<Rect> found, found_filtered;
-	for (int i = 0; i < testImages.size(); i++)
-	{
-		img = testImages[i];
-		if (!img.data)
-		{
-			cout << "Failed to read test picture" << endl;
-		}
-
-		int p = 2;
-		resize(img, img, Size(img.cols / p, img.rows / p));
-		hogTest.detectMultiScale(img, found, 0, Size(8, 8), Size(32, 32), 1.05, 2);
-		cout << endl
-			 << "The size of the rectangular box is: " << found.size() << endl;
-		drawRect(img, found);
-		imwrite(result + "/res" + to_string(i) + ".jpg", img);
-		//namedWindow("Img", 0);
-		//imshow("Img"+to_string(i), img);
-		//waitKey(0);
-	}
-	//foundRects = found;
+	Ptr<SVM> svm = SVM::create();
+    /* Default values to train SVM */
+    svm->setCoef0(0.0);
+    svm->setDegree(3);
+    svm->setTermCriteria(TermCriteria(TermCriteria::MAX_ITER + TermCriteria::EPS, 1000, 1e-3));
+    svm->setGamma(0);
+    svm->setKernel(SVM::LINEAR);
+    svm->setNu(0.5);
+    svm->setP(0.1);             // for EPSILON_SVR, epsilon in loss function?
+    svm->setC(0.01);            // From paper, soft classifier
+    svm->setType(SVM::EPS_SVR); // C_SVC; // EPSILON_SVR; // may be also NU_SVR; // do regression task
+    svm->train(data, ROW_SAMPLE, label);
+	return svm;
 };
-
 /**
- * Draw the detected rectangles in the image
- */
-
-void Detection::drawRect(Mat testImg, vector<Rect> rectFound)
+write comment
+*/
+vector<float> Detection::get_svm_detector(const Ptr<SVM> &svm)
 {
-	//vector<Rect> rects = getRects();
-	for (int i = 0; i < rectFound.size(); i++)
-	{
-		Rect r = rectFound[i];
-
-		r.x += cvRound(r.width * 0.1); //int cvRound(double value) Rounds a double type number and returns an integer number!
-		r.width = cvRound(r.width * 0.8);
-		r.y += cvRound(r.height * 0.07);
-		r.height = cvRound(r.height * 0.8);
-
-		rectangle(testImg, r.tl(), r.br(), Scalar(0, 0, 255), 3);
-	}
-};
-
+    // get the support vectors
+    Mat sv = svm->getSupportVectors();
+    const int sv_total = sv.rows;
+    // get the decision function
+    Mat alpha, svidx;
+    double rho = svm->getDecisionFunction(0, alpha, svidx);
+    CV_Assert(alpha.total() == 1 && svidx.total() == 1 && sv_total == 1);
+    CV_Assert((alpha.type() == CV_64F && alpha.at<double>(0) == 1.) ||
+              (alpha.type() == CV_32F && alpha.at<float>(0) == 1.f));
+    CV_Assert(sv.type() == CV_32F);
+    vector<float> hog_detector(sv.cols + 1);
+    memcpy(&hog_detector[0], sv.ptr(), sv.cols * sizeof(hog_detector[0]));
+    hog_detector[sv.cols] = (float)-rho;
+    return hog_detector;
+}
 /**
- * Returns the found rectangles
- */
-vector<Rect> Detection::getRects()
+Write comment
+*/
+void Detection::testTrainedDetector(String obj_det_filename, String test_dir)
 {
-	return foundRects;
-};
+    cout << "Testing trained detector..." << endl;
+    HOGDescriptor hog;
+    hog.load(obj_det_filename);
+    vector<String> files;
+    glob(test_dir, files);
+
+    obj_det_filename = "testing " + obj_det_filename;
+    for (size_t i = 0;; i++)
+    {
+        Mat img;
+        if (i < files.size())
+        {
+            img = imread(files[i]);
+        }
+        if (img.empty())
+        {
+            return;
+        }
+        vector<Rect> detections;
+        vector<double> foundWeights;
+        hog.detectMultiScale(img, detections, foundWeights, 0.5, Size(3, 3));
+        for (size_t j = 0; j < detections.size(); j++)
+        {
+            Scalar color = Scalar(0, foundWeights[j] * foundWeights[j] * 200, 0);
+            rectangle(img, detections[j], color, img.cols / 400 + 1);
+        }
+        imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/resk" + to_string(i) + ".jpg", img);
+    }
+}

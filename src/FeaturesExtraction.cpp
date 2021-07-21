@@ -18,14 +18,12 @@ using namespace std;
 */
 FeaturesExtraction::FeaturesExtraction()
 {
-    sample_feature;
-    sample_label;
 }
 
 /**
     Extract HOG features from the given set of images.
 */
-void FeaturesExtraction::extractHOG(const Size wsize, const vector<Mat> &img_lst, vector<Mat> &gradient_lst, bool use_flip)
+void FeaturesExtraction::extractHOG(const Size wsize, const vector<Mat> &img_lst, vector<Mat> &gradient_lst)
 {
     HOGDescriptor hog;
     hog.winSize = wsize;
@@ -42,17 +40,15 @@ void FeaturesExtraction::extractHOG(const Size wsize, const vector<Mat> &img_lst
             cvtColor(img_lst[i](r), gray, COLOR_BGR2GRAY);
             hog.compute(gray, descriptors, Size(8, 8), Size(0, 0));
             gradient_lst.push_back(Mat(descriptors).clone());
-            if (use_flip)
-            {
-                flip(gray, gray, 1);
-                hog.compute(gray, descriptors, Size(8, 8), Size(0, 0));
-                gradient_lst.push_back(Mat(descriptors).clone());
-            }
         }
     }
 };
 /*
     Function to convert extracted features in order to be used as training data for the models.
+
+    Convert training/testing set to be used by OpenCV Machine Learning algorithms.
+    TrainData is a matrix of size (#samples x max(#cols,#rows) per samples), in 32FC1.
+    Transposition of samples are made if needed.
 */
 void FeaturesExtraction::convert_to_ml(const vector<Mat> &train_samples, Mat &trainData)
 {
@@ -74,4 +70,4 @@ void FeaturesExtraction::convert_to_ml(const vector<Mat> &train_samples, Mat &tr
             train_samples[i].copyTo(trainData.row((int)i));
         }
     }
-}
+};

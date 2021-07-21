@@ -3,7 +3,10 @@
         "vector": "cpp",
         "algorithm": "cpp",
         "iostream": "cpp",
-        "xlocale": "cpp"
+        "xlocale": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "xstring": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }
