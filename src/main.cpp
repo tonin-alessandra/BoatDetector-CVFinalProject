@@ -4,15 +4,16 @@
     @author Alessandra Tonin
 */
 
-#include "opencv2/imgproc.hpp"
-#include "opencv2/highgui.hpp"
-#include "opencv2/ml.hpp"
-#include "opencv2/objdetect.hpp"
-#include "opencv2/videoio.hpp"
+#include <opencv2/opencv.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/ml.hpp>
+#include <opencv2/objdetect.hpp>
 #include <iostream>
 #include <src/Preprocessing.cpp>
 #include <src/FeaturesExtraction.cpp>
 #include <src/Detection.cpp>
+#include <src/Postprocessing.cpp>
 
 using namespace cv;
 using namespace cv::ml;
@@ -40,12 +41,13 @@ int main(int argc, char **argv)
     String test_dirk = "C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/FINAL_DATASET/FINAL_DATASET/TEST_DATASET/kaggle";
     String test_dirv = "C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/FINAL_DATASET/FINAL_DATASET/TEST_DATASET/venice";
     String obj_det_filename = "HOGboats.xml";
-    bool test_detector = false;
+    bool test_detector = true;
     bool train_twice = true;
 
     Preprocessing preprocessor = Preprocessing();
     FeaturesExtraction hogExtractor = FeaturesExtraction();
     Detection detector = Detection();
+    Postprocessing postprocessor = Postprocessing();
 
     Size newSize = Size(130, 90);
     vector<Mat> pos_lst, full_neg_lst, neg_lst, gradient_lst;
@@ -55,7 +57,68 @@ int main(int argc, char **argv)
 
     if (test_detector)
     {
-        detector.testTrainedDetector(obj_det_filename, test_dirk);
+        //vector<Rect> gtRects;
+        //gtRects.push_back(Rect(607, 468, 950 - 607, 745 - 468));
+        vector<Mat> test;
+        preprocessor.loadImages(test_dirv, test);
+        cout<<"w";
+        detector.testTrainedDetector(obj_det_filename, test, "zzz");
+        cout<<"y";
+        vector<vector<Rect>> detectedRect = detector.getRects();
+        cout<<"z";
+        vector<vector<Rect>> nmsResRects;
+        cout<<"e";
+        for (int i = 0; i < detectedRect.size(); i++)
+        {
+            cout<<"q";
+            vector<Rect> tmp;
+            postprocessor.nonMaxSuppression(detectedRect[i], tmp, 0.02, 0.0);
+            nmsResRects.push_back(tmp);
+            
+        }
+        cout<<"a";
+        for (int i = 0; i < test.size(); i++)
+        {
+            Mat image = test[i];
+            cout<<"b";
+            for (int j = 0; j < nmsResRects[i].size(); j++)
+            {
+                //red for detected
+                rectangle(image, nmsResRects[i][j], Scalar(0, 0, 255), 10);
+                cout<<"c";
+            }
+            cout<<"d";
+            imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/vvv"+ to_string(i) + ".jpg", image);
+            cout<<"e";
+            imshow("img", image);
+            waitKey();
+        }
+        /*for (int i = 0; i < gtRects.size(); i++)
+        {
+            //blue for ground truth
+            rectangle(image, gtRects[i], Scalar(255, 0, 0), 10);
+        }*/
+
+        /*String filename = "image0018.xml";
+
+        FileStorage sourceXMLFile;
+        sourceXMLFile.open(filename, FileStorage::READ);
+        FileNode n = sourceXMLFile.root();
+        
+        int type = n.type();
+        cout<<to_string(type);
+        bool str = n.empty();
+        if (str)
+            cout << "yes";
+        else
+        {
+            cout << "No";
+        }
+        // Read mappings from a sequence
+
+        FileNode n2 = sourceXMLFile["annotation"];
+        //cout << "Width  " << n2["size"]["width"] << endl << endl;
+        sourceXMLFile.release();*/
         exit(0);
     }
 
@@ -173,6 +236,43 @@ int main(int argc, char **argv)
     hog.winSize = pos_image_size;
     hog.setSVMDetector(detector.get_svm_detector(svm));
     hog.save(obj_det_filename);
-    detector.testTrainedDetector(obj_det_filename, test_dirk);
+    String namek = "resk";
+    String namev = "resv";
+    //detector.testTrainedDetector(obj_det_filename, test_dirk, namek);
+    //detector.testTrainedDetector(obj_det_filename, test_dirv, namev);
+    vector<Mat> test;
+        preprocessor.loadImages(test_dirk, test);
+        cout<<"w";
+        detector.testTrainedDetector(obj_det_filename, test, "zzz");
+        cout<<"y";
+        vector<vector<Rect>> detectedRect = detector.getRects();
+        cout<<"z";
+        vector<vector<Rect>> nmsResRects;
+        cout<<"e";
+        for (int i = 0; i < detectedRect.size(); i++)
+        {
+            cout<<"q";
+            vector<Rect> tmp;
+            postprocessor.nonMaxSuppression(detectedRect[i], tmp, 0.02, 0.0);
+            nmsResRects.push_back(tmp);
+            
+        }
+        cout<<"a";
+        for (int i = 0; i < test.size(); i++)
+        {
+            Mat image = test[i];
+            cout<<"b";
+            for (int j = 0; j < nmsResRects[i].size(); j++)
+            {
+                //red for detected
+                rectangle(image, nmsResRects[i][j], Scalar(0, 0, 255), 10);
+                cout<<"c";
+            }
+            cout<<"d";
+            imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/kkk"+ to_string(i) + ".jpg", image);
+            cout<<"e";
+            imshow("img", image);
+            waitKey();
+        }
     return 0;
 }

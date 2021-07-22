@@ -12,7 +12,7 @@ class Detection
 protected:
     Ptr<SVM> svmModel;
     vector<float> svmVec;
-    vector<Rect> foundRects;
+    vector<vector<Rect>> totFoundRects;
 
     // Methods
 
@@ -25,16 +25,16 @@ public:
 
     
     //Load and test image
-    void testImage(String svm, vector<Mat> testImgs, String result);
+    //void testImage(String svm, vector<Mat> testImgs, String result);
 
     //Get found rectangles
-    vector<Rect> getRects();
+    vector<vector<Rect>> getRects();
     
     //Get svm (example code)
     vector<float> get_svm_detector(const Ptr<SVM> &svm);
 
     //Test the trained detector 
-    void testTrainedDetector(String obj_det_filename, String test_dir);
+    void testTrainedDetector(String obj_det_filename, vector<Mat> test_dir, String res_name);
 
 private:
     //Load trained svm model

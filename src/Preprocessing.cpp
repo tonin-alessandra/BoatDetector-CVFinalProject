@@ -41,7 +41,7 @@ void Preprocessing::loadImages(const String &dirname, vector<Mat> &img_lst)
 
 };
 
-/**
+/*/**
     Function to equalize images, to improve contrast.
     @param imgs The vector of images to equalize.
     @param eqImgs The vector of equalized images.

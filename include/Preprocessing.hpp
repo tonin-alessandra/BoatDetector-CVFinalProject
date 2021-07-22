@@ -23,7 +23,7 @@ public:
     void loadImages(const String &dirname, vector<Mat> &images);
 
     // Function to equalize images.
-    void equalizeImgs(vector<Mat> images, vector<Mat> equalized);
+    //void equalizeImgs(vector<Mat> images, vector<Mat> equalized);
 
     //Function to remove noise
     void denoiseImgs(vector<Mat> images, vector<Mat> denoised);
