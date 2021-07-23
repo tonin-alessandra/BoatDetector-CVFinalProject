@@ -14,7 +14,8 @@ If you decide to retrain the model, the parameters you should provide in order t
  - nd   --> path of directory of negative images used to train the model,
  - td   --> path of directory of test images,
  - t    --> test a trained detector (default value is true).
-pd and nd are not necessary if you use the already trained model, otherwise they will be the paths to you positive and negative samples used for the trining.
+
+Fields pd and nd are not necessary if you use the already trained model, otherwise they will be the paths to you positive and negative samples used for the trining.
 Also td is set to a default value, that is the relative path of the testSet directory of this project, containing the images used for training. If you want to change this
 parameter, please be sure to provide the test images and the corresponding ground-truth using the same structure adopted in this project.
 The structure required for the test set is: 
