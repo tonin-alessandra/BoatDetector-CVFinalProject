@@ -57,39 +57,53 @@ int main(int argc, char **argv)
 
     if (test_detector)
     {
-        //vector<Rect> gtRects;
-        //gtRects.push_back(Rect(607, 468, 950 - 607, 745 - 468));
+        // need real gt parsed from xml/txt here
+        vector<vector<Rect>> totGT;
+        vector<Rect> gtRects;
+        gtRects.push_back(Rect(607, 468, 950 - 607, 745 - 468));
+        gtRects.push_back(Rect(800, 500, 950 - 800, 745 - 500));
+
+        //fake gt, same 2 rects for all images
+        for (int s = 0; s < 12; s++)
+            totGT.push_back(gtRects);
+
         vector<Mat> test;
-        preprocessor.loadImages(test_dirv, test);
-        cout<<"w";
+        preprocessor.loadImages(test_dirk, test);
+        cout << "w";
         detector.testTrainedDetector(obj_det_filename, test, "zzz");
-        cout<<"y";
+        cout << "y";
         vector<vector<Rect>> detectedRect = detector.getRects();
-        cout<<"z";
+        cout << "z";
         vector<vector<Rect>> nmsResRects;
-        cout<<"e";
+        cout << "e";
         for (int i = 0; i < detectedRect.size(); i++)
         {
-            cout<<"q";
+            cout << "q";
             vector<Rect> tmp;
             postprocessor.nonMaxSuppression(detectedRect[i], tmp, 0.02, 0.0);
             nmsResRects.push_back(tmp);
-            
         }
-        cout<<"a";
+        vector<vector<float>> totScores;
+        for (int g = 0; g <nmsResRects.size(); g++)
+        {
+            vector<float> scores = postprocessor.testPerformance(totGT[g], nmsResRects[g]);
+            totScores.push_back(scores);
+        }
+        cout << "a";
         for (int i = 0; i < test.size(); i++)
         {
             Mat image = test[i];
-            cout<<"b";
+            cout << "b";
             for (int j = 0; j < nmsResRects[i].size(); j++)
             {
                 //red for detected
                 rectangle(image, nmsResRects[i][j], Scalar(0, 0, 255), 10);
-                cout<<"c";
+                putText(image, to_string(totScores[i][j]), nmsResRects[i][j].tl(), HersheyFonts::FONT_HERSHEY_SIMPLEX,1,Scalar(255,255,255),2 );
+                cout << "c";
             }
-            cout<<"d";
-            imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/vvv"+ to_string(i) + ".jpg", image);
-            cout<<"e";
+            cout << "d";
+            imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/vvv" + to_string(i) + ".jpg", image);
+            cout << "e";
             imshow("img", image);
             waitKey();
         }
@@ -241,38 +255,37 @@ int main(int argc, char **argv)
     //detector.testTrainedDetector(obj_det_filename, test_dirk, namek);
     //detector.testTrainedDetector(obj_det_filename, test_dirv, namev);
     vector<Mat> test;
-        preprocessor.loadImages(test_dirk, test);
-        cout<<"w";
-        detector.testTrainedDetector(obj_det_filename, test, "zzz");
-        cout<<"y";
-        vector<vector<Rect>> detectedRect = detector.getRects();
-        cout<<"z";
-        vector<vector<Rect>> nmsResRects;
-        cout<<"e";
-        for (int i = 0; i < detectedRect.size(); i++)
+    preprocessor.loadImages(test_dirk, test);
+    cout << "w";
+    detector.testTrainedDetector(obj_det_filename, test, "zzz");
+    cout << "y";
+    vector<vector<Rect>> detectedRect = detector.getRects();
+    cout << "z";
+    vector<vector<Rect>> nmsResRects;
+    cout << "e";
+    for (int i = 0; i < detectedRect.size(); i++)
+    {
+        cout << "q";
+        vector<Rect> tmp;
+        postprocessor.nonMaxSuppression(detectedRect[i], tmp, 0.02, 0.0);
+        nmsResRects.push_back(tmp);
+    }
+    cout << "a";
+    for (int i = 0; i < test.size(); i++)
+    {
+        Mat image = test[i];
+        cout << "b";
+        for (int j = 0; j < nmsResRects[i].size(); j++)
         {
-            cout<<"q";
-            vector<Rect> tmp;
-            postprocessor.nonMaxSuppression(detectedRect[i], tmp, 0.02, 0.0);
-            nmsResRects.push_back(tmp);
-            
+            //red for detected
+            rectangle(image, nmsResRects[i][j], Scalar(0, 0, 255), 10);
+            cout << "c";
         }
-        cout<<"a";
-        for (int i = 0; i < test.size(); i++)
-        {
-            Mat image = test[i];
-            cout<<"b";
-            for (int j = 0; j < nmsResRects[i].size(); j++)
-            {
-                //red for detected
-                rectangle(image, nmsResRects[i][j], Scalar(0, 0, 255), 10);
-                cout<<"c";
-            }
-            cout<<"d";
-            imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/kkk"+ to_string(i) + ".jpg", image);
-            cout<<"e";
-            imshow("img", image);
-            waitKey();
-        }
+        cout << "d";
+        imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/kkk" + to_string(i) + ".jpg", image);
+        cout << "e";
+        imshow("img", image);
+        waitKey();
+    }
     return 0;
 }

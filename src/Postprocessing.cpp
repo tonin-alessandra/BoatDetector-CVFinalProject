@@ -56,8 +56,8 @@ void Postprocessing::nonMaxSuppression(const vector<Rect>& srcRects, vector<Rect
             /*float intArea = static_cast<float>((rect1 & rect2).area());
             float unionArea = rect1.area() + rect2.area() - intArea;
             float overlap = intArea / unionArea;*/
-            //float overlap = computeIOU(rect1, rect2);
-            float overlap = static_cast<float>((rect1 & rect2).area());
+            float overlap = computeIOU(rect1, rect2);
+            //float overlap = static_cast<float>((rect1 & rect2).area());
             // if there is sufficient overlap, suppress the current bounding box
             if (overlap > thresh)
             {
@@ -73,6 +73,31 @@ void Postprocessing::nonMaxSuppression(const vector<Rect>& srcRects, vector<Rect
             resRects.push_back(rect1);
     }
 
+};
+
+/**
+ * Test the performance of the detector by using IoU metric.
+ */
+vector<float> Postprocessing::testPerformance(vector<Rect> groundTruth, vector<Rect> detections){
+    // max obtained iou for each detected box
+    vector<float> iouScores;
+    for(int i=0; i<detections.size(); i++){
+        vector<float> tmp;
+        for(int j =0; j<groundTruth.size(); j++){
+            float iou = computeIOU(groundTruth[i], detections[j]);
+            tmp.push_back(iou);
+        }
+        //float iouMax = max_element(tmp.begin(), tmp.end());
+        float maxElem = tmp[0];
+        for(int i=0; i<tmp.size(); i++)
+        {
+            if(tmp[i]>maxElem)
+                maxElem = tmp[i];
+        }
+        //int iouMaxIdx = max_element(tmp.begin(), tmp.end()) - tmp.begin();
+        iouScores.push_back(maxElem);
+    }
+    return iouScores;
 };
 
 /**
