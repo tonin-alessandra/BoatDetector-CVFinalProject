@@ -21,6 +21,4 @@ public:
     
     //Parse a ground-truth txt file
     vector<int> parseTxtGT(String filePath);
-
-
 };
