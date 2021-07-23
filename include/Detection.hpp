@@ -13,6 +13,7 @@ protected:
     Ptr<SVM> svmModel;
     vector<float> svmVec;
     vector<vector<Rect>> totFoundRects;
+    vector<vector<double>> totConfScores;
 
     // Methods
 
@@ -29,6 +30,9 @@ public:
 
     //Get found rectangles
     vector<vector<Rect>> getRects();
+    
+    //
+    vector<vector<double>> getConfidenceScores();
     
     //Get svm (example code)
     vector<float> get_svm_detector(const Ptr<SVM> &svm);

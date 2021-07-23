@@ -14,7 +14,7 @@ public:
     Postprocessing();
 
     //Perform non-maxima suppression
-    void nonMaxSuppression(const vector<Rect>& srcRects, vector<Rect>& resRects, float thresh, int neighbors);
+    void nonMaxSuppression(const vector<Rect>& srcRects, const vector<double>& scores, vector<Rect>& resRects, float thresh, int neighbors, double minScoreSum);
 
     //Compute Intersection over Union between boxes (IoU)
     float computeIOU(Rect b1, Rect b2);

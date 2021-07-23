@@ -60,10 +60,16 @@ int main(int argc, char **argv)
         // need real gt parsed from xml/txt here
         vector<vector<Rect>> totGT;
         vector<Rect> gtRects;
-        gtRects.push_back(Rect(607, 468, 950 - 607, 745 - 468));
-        gtRects.push_back(Rect(800, 500, 950 - 800, 745 - 500));
+        //single vela 759;803;431;547;
+        // 3 723;974;158;487;
+        // traghetto boat:305;929;433;634; boat:577;638;607;631;
+        gtRects.push_back(Rect(759, 431, 803 - 759, 547 - 431));
+        gtRects.push_back(Rect(723, 158, 974 - 723, 487 - 158));
+        gtRects.push_back(Rect(305, 433, 929 - 305, 634 - 433));
+        gtRects.push_back(Rect(577, 607, 638 - 577, 631 - 607));
 
-        //fake gt, same 2 rects for all images
+
+        //fake gt, same 4 rects for all images
         for (int s = 0; s < 12; s++)
             totGT.push_back(gtRects);
 
@@ -73,6 +79,7 @@ int main(int argc, char **argv)
         detector.testTrainedDetector(obj_det_filename, test, "zzz");
         cout << "y";
         vector<vector<Rect>> detectedRect = detector.getRects();
+        vector<vector<double>> detectedScores = detector.getConfidenceScores();
         cout << "z";
         vector<vector<Rect>> nmsResRects;
         cout << "e";
@@ -80,15 +87,15 @@ int main(int argc, char **argv)
         {
             cout << "q";
             vector<Rect> tmp;
-            postprocessor.nonMaxSuppression(detectedRect[i], tmp, 0.02, 0.0);
+            postprocessor.nonMaxSuppression(detectedRect[i], detectedScores[i], tmp, 0.03, 0, 0);
             nmsResRects.push_back(tmp);
         }
-        vector<vector<float>> totScores;
+        /*vector<vector<float>> totScores;
         for (int g = 0; g <nmsResRects.size(); g++)
         {
             vector<float> scores = postprocessor.testPerformance(totGT[g], nmsResRects[g]);
             totScores.push_back(scores);
-        }
+        }*/
         cout << "a";
         for (int i = 0; i < test.size(); i++)
         {
@@ -98,7 +105,7 @@ int main(int argc, char **argv)
             {
                 //red for detected
                 rectangle(image, nmsResRects[i][j], Scalar(0, 0, 255), 10);
-                putText(image, to_string(totScores[i][j]), nmsResRects[i][j].tl(), HersheyFonts::FONT_HERSHEY_SIMPLEX,1,Scalar(255,255,255),2 );
+                //putText(image, to_string(totScores[i][j]), nmsResRects[i][j].tl(), HersheyFonts::FONT_HERSHEY_SIMPLEX,1,Scalar(255,255,255),2 );
                 cout << "c";
             }
             cout << "d";
@@ -267,7 +274,7 @@ int main(int argc, char **argv)
     {
         cout << "q";
         vector<Rect> tmp;
-        postprocessor.nonMaxSuppression(detectedRect[i], tmp, 0.02, 0.0);
+        //postprocessor.nonMaxSuppression(detectedRect[i], tmp, 0.02, 0.0, 0);
         nmsResRects.push_back(tmp);
     }
     cout << "a";

@@ -22,9 +22,62 @@ Postprocessing::Postprocessing(){};
 /**
  * Compute non-maxima suppression to remove overlapping bounding boxes.
  */
-void Postprocessing::nonMaxSuppression(const vector<Rect>& srcRects, vector<Rect>& resRects, float thresh, int neighbors){
-    
+void Postprocessing::nonMaxSuppression(const vector<Rect>& srcRects, const vector<double>& scores, vector<Rect>& resRects, float thresh, int neighbors = 0, double minScoresSum = 0){
+
     resRects.clear();
+
+    const size_t size = srcRects.size();
+    if (!size)
+        return;
+
+    assert(srcRects.size() == scores.size());
+
+    // Sort the bounding boxes by the detection score
+    std::multimap<float, size_t> idxs;
+    for (size_t i = 0; i < size; ++i)
+    {
+        idxs.emplace(scores[i], i);
+    }
+
+    // keep looping while some indexes still remain in the indexes list
+    while (idxs.size() > 0)
+    {
+        // grab the last rectangle
+        auto lastElem = --std::end(idxs);
+        const cv::Rect& rect1 = srcRects[lastElem->second];
+
+        int neigborsCount = 0;
+        float scoresSum = lastElem->first;
+
+        idxs.erase(lastElem);
+
+        for (auto pos = std::begin(idxs); pos != std::end(idxs); )
+        {
+            // grab the current rectangle
+            const cv::Rect& rect2 = srcRects[pos->second];
+
+            float intArea = static_cast<float>((rect1 & rect2).area());
+            float unionArea = rect1.area() + rect2.area() - intArea;
+            float overlap = intArea / unionArea;
+
+            // if there is sufficient overlap, suppress the current bounding box
+            if (overlap > thresh)
+            {
+                scoresSum += pos->first;
+                pos = idxs.erase(pos);
+                ++neigborsCount;
+            }
+            else
+            {
+                ++pos;
+            }
+        }
+        if (neigborsCount >= neighbors && scoresSum >= minScoresSum)
+            resRects.push_back(rect1);
+    
+}
+    
+    /*resRects.clear();
 
     const size_t size = srcRects.size();
     if (!size)
@@ -56,7 +109,7 @@ void Postprocessing::nonMaxSuppression(const vector<Rect>& srcRects, vector<Rect
             /*float intArea = static_cast<float>((rect1 & rect2).area());
             float unionArea = rect1.area() + rect2.area() - intArea;
             float overlap = intArea / unionArea;*/
-            float overlap = computeIOU(rect1, rect2);
+            /*float overlap = computeIOU(rect1, rect2);
             //float overlap = static_cast<float>((rect1 & rect2).area());
             // if there is sufficient overlap, suppress the current bounding box
             if (overlap > thresh)
@@ -71,7 +124,7 @@ void Postprocessing::nonMaxSuppression(const vector<Rect>& srcRects, vector<Rect
         }
         if (neigborsCount >= neighbors)
             resRects.push_back(rect1);
-    }
+    }*/
 
 };
 
