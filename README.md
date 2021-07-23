@@ -4,10 +4,10 @@ This code implements a boat detector system based on extraction of Histogram of 
 
 If the project is compiled from the terminal, a set of parameters must be provided in order to make the code run correctly.
 In particular, the available commands are:
-          pd   --> path of directory of positive images used to train the model
-          nd   --> path of directory of negative images used to train the model
-          td   --> path of directory of test images
-          t    --> test a trained detector (default value is true)
+          pd   --> path of directory of positive images used to train the model,
+          nd   --> path of directory of negative images used to train the model,
+          td   --> path of directory of test images,
+          t    --> test a trained detector (default value is true).
 
 Commands pd and nd are mandatory if you want to retrain the model, so if t is set to false. Otherwise, if t is set to true (to avoid retraining the model from scratch), you can 
 omit also pd and nd, since they're not needed.
