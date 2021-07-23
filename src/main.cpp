@@ -75,7 +75,7 @@ int main(int argc, char **argv)
         vector<Mat> test;
         preprocessor.loadImages(test_dir, test);
 
-        // ***********************************for each test image, load the ground truth from txt file
+        // For each test image, load the ground truth from txt file.
         vector<vector<Rect>> totGT;
 
         for (int i = 0; i < test.size(); i++)
@@ -95,11 +95,12 @@ int main(int argc, char **argv)
             }
             totGT.push_back(currentGtRects);
         }
-        //**********************************************end of gt loading
+
         detector.testTrainedDetector(obj_det_filename, test);
         vector<vector<Rect>> detectedRect = detector.getRects();
         vector<vector<double>> detectedScores = detector.getConfidenceScores();
-        // *************************perform nms
+
+        // Perform non-maxima suppression.
         vector<vector<Rect>> nmsResRects;
         for (int i = 0; i < detectedRect.size(); i++)
         {
@@ -107,19 +108,16 @@ int main(int argc, char **argv)
             postprocessor.nonMaxSuppression(detectedRect[i], detectedScores[i], tmp, 0.03, 0, 0);
             nmsResRects.push_back(tmp);
         }
-        //******************end of nms
 
-        //***************************evaluate iou
+        // Evaluate iou.
         vector<vector<float>> iouScores;
         for (int g = 0; g < nmsResRects.size(); g++)
         {
             vector<float> scores = postprocessor.testPerformance(totGT[g], nmsResRects[g]);
             iouScores.push_back(scores);
         }
-        //*************************end of iou evaluation
 
-        //**************** draw detected bb and gt bb
-
+        //Draw detected bounding boxes and true ones.
         for (int i = 0; i < test.size(); i++)
         {
             Mat image = test[i];
@@ -139,9 +137,9 @@ int main(int argc, char **argv)
             imshow("Image", image);
             waitKey();
         }
-        //**************** end of drawing
         exit(0);
     }
+    
 
     // The code from this point is needed just for the creation and training of the model.
 
