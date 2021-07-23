@@ -12,8 +12,6 @@ class FeaturesExtraction
     // Data
 
 protected:
-    Mat sample_feature;
-    Mat sample_label;
 
     // Methods
 

@@ -14,6 +14,7 @@
 #include <src/FeaturesExtraction.cpp>
 #include <src/Detection.cpp>
 #include <src/Postprocessing.cpp>
+#include <src/Utils.cpp>
 
 using namespace cv;
 using namespace cv::ml;
@@ -48,6 +49,7 @@ int main(int argc, char **argv)
     FeaturesExtraction hogExtractor = FeaturesExtraction();
     Detection detector = Detection();
     Postprocessing postprocessor = Postprocessing();
+    Utils utilities = Utils();
 
     Size newSize = Size(130, 90);
     vector<Mat> pos_lst, full_neg_lst, neg_lst, gradient_lst;
@@ -74,7 +76,7 @@ int main(int argc, char **argv)
             totGT.push_back(gtRects);
 
         vector<Mat> test;
-        preprocessor.loadImages(test_dirk, test);
+        preprocessor.loadImages(test_dirv, test);
         cout << "w";
         detector.testTrainedDetector(obj_det_filename, test, "zzz");
         cout << "y";
@@ -119,27 +121,7 @@ int main(int argc, char **argv)
             //blue for ground truth
             rectangle(image, gtRects[i], Scalar(255, 0, 0), 10);
         }*/
-
-        /*String filename = "image0018.xml";
-
-        FileStorage sourceXMLFile;
-        sourceXMLFile.open(filename, FileStorage::READ);
-        FileNode n = sourceXMLFile.root();
-        
-        int type = n.type();
-        cout<<to_string(type);
-        bool str = n.empty();
-        if (str)
-            cout << "yes";
-        else
-        {
-            cout << "No";
-        }
-        // Read mappings from a sequence
-
-        FileNode n2 = sourceXMLFile["annotation"];
-        //cout << "Width  " << n2["size"]["width"] << endl << endl;
-        sourceXMLFile.release();*/
+    
         exit(0);
     }
 
@@ -267,6 +249,8 @@ int main(int argc, char **argv)
     detector.testTrainedDetector(obj_det_filename, test, "zzz");
     cout << "y";
     vector<vector<Rect>> detectedRect = detector.getRects();
+    vector<vector<double>> detectedScores = detector.getConfidenceScores();
+
     cout << "z";
     vector<vector<Rect>> nmsResRects;
     cout << "e";
@@ -274,7 +258,7 @@ int main(int argc, char **argv)
     {
         cout << "q";
         vector<Rect> tmp;
-        //postprocessor.nonMaxSuppression(detectedRect[i], tmp, 0.02, 0.0, 0);
+        postprocessor.nonMaxSuppression(detectedRect[i], detectedScores[i], tmp, 0.03, 0, 0);
         nmsResRects.push_back(tmp);
     }
     cout << "a";
@@ -288,9 +272,7 @@ int main(int argc, char **argv)
             rectangle(image, nmsResRects[i][j], Scalar(0, 0, 255), 10);
             cout << "c";
         }
-        cout << "d";
         imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/kkk" + to_string(i) + ".jpg", image);
-        cout << "e";
         imshow("img", image);
         waitKey();
     }

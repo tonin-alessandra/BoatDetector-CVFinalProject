@@ -41,23 +41,6 @@ void Preprocessing::loadImages(const String &dirname, vector<Mat> &img_lst)
 
 };
 
-/*/**
-    Function to equalize images, to improve contrast.
-    @param imgs The vector of images to equalize.
-    @param eqImgs The vector of equalized images.
-*/
-/*void Preprocessing::equalizeImgs(vector<Mat> imgs, vector<Mat> eqImgs)
-{
-    for (int i = 0; i < imgs.size(); i++)
-    {
-        Mat img = imgs[i];
-        cvtColor(img, img, COLOR_BGR2GRAY);
-        equalizeHist(img, img);
-        cvtColor(img, img, COLOR_GRAY2BGR);
-        eqImgs.push_back(img);
-    }
-};*/
-
 /**
     Function to remove noise.
     @param imgs The vector of images to be denoised.

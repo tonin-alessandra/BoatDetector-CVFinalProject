@@ -23,65 +23,6 @@ Detection::Detection(){};
 /**
 	Create svm and train it
 */
-/*void Detection::createSVM(Mat feature, Mat label)
-{
-	Ptr<SVM> svm = SVM::create();
-	svm->setType(SVM::C_SVC);
-	//svm->setType(SVM::ONE_CLASS);
-	svm->setKernel(SVM::LINEAR);
-	Ptr<TrainData> tData = TrainData::create(feature, ROW_SAMPLE, label);
-	//Ptr<TrainData> tData = TrainData::create(feature, COL_SAMPLE, label); ???????
-	cout << "train begin" << endl;
-	svm->trainAuto(tData);
-	svm->save("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/SVM_Model.xml");
-	cout << "train done" << endl;
-	svmModel = svm;
-};*/
-
-/**
- * Load a trained svm model and its important parameters
-*/
-/*void Detection::loadSVM(String svmPath)
-{
-	Ptr<SVM> svm = SVM::load(svmPath);
-	if (svm->empty())
-	{
-		cout << "Failed to read XML file." << endl;
-	}
-	else
-	{
-		cout << "Successfully read the XML file." << endl;
-	}
-	Mat suppVecs = svm->getSupportVectors(); //each vector is a float (row of a matrix) --> number of sv is suppVecs.rows
-	int svmDim = svm->getVarCount();		 //number of variables in training samples
-	Mat alpha = Mat::zeros(suppVecs.rows, svmDim, CV_32F); //weights of svm
-	Mat svindex = Mat::zeros(1, suppVecs.rows, CV_64F); //indices of support vectors
-	Mat result;
-	double rho = svm->getDecisionFunction(0, alpha, svindex);
-	alpha.convertTo(alpha, CV_32F);
-	result = -1 * alpha * suppVecs;
-	vector<float> vec;
-	for (int i = 0; i < svmDim; ++i)
-	{
-		vec.push_back(result.at<float>(0, i));
-	}
-	vec.push_back(rho);
-	ofstream fout("HOGDetector.txt");
-	for (int i = 0; i < vec.size(); ++i)
-	{
-		fout << vec[i] << endl;
-	}
-	cout << "Save file detected by HOG complete" << endl;
-
-	//return svm;
-	svmVec = vec;
-};*/
-
-
-//--------------------------------------------------------------------------------
-/**
-	Create svm and train it
-*/
 Ptr<SVM> Detection::createSVM(Mat data, vector<int> label)
 {
 	Ptr<SVM> svm = SVM::create();
@@ -126,8 +67,6 @@ void Detection::testTrainedDetector(String obj_det_filename, vector<Mat> testImg
     cout << "Testing trained detector..." << endl;
     HOGDescriptor hog;
     hog.load(obj_det_filename);
-    //vector<String> files;
-    //glob(test_dir, files);
 
     obj_det_filename = "testing " + obj_det_filename;
 
@@ -167,6 +106,9 @@ vector<vector<Rect>> Detection::getRects(){
     return totFoundRects;
 }
 
+/**
+ * 
+ */
 vector<vector<double>> Detection::getConfidenceScores(){
     return totConfScores;
 }
