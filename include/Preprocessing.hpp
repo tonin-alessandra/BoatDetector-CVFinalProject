@@ -10,21 +10,18 @@ using namespace std;
 
 class Preprocessing
 {
-    // Data
-
-protected:
     // Methods
 
 public:
     // Constructor.
     Preprocessing();
 
-    //Function to load images
+    // Function to load images.
     void loadImages(const String &dirname, vector<Mat> &images);
 
-    //Function to remove noise
+    // Function to remove noise.
     void denoiseImgs(vector<Mat> images, vector<Mat> denoised);
 
-    //Function to resize images
+    // Function to resize images.
     vector<Mat> resizeImgs(vector<Mat> images, Size size);
 };

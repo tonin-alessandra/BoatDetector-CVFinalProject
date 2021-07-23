@@ -1,8 +1,5 @@
-// feature extraction
-// sliding window
-// image pyramid
 /** 
-    Definition of a class that extracts feature from the images, to be used in the Detection step.
+    Definition of a class that extracts features from the images, to be used in the Detection step.
     @file FeaturesExtraction.cpp
     @author Alessandra Tonin
 */
@@ -21,7 +18,10 @@ FeaturesExtraction::FeaturesExtraction()
 }
 
 /**
-    Extract HOG features from the given set of images.
+ * Extract HOG features from the given set of images.
+ * @param wsize The size of the detection sliding window.
+ * @param img_lst The set of images in which extract HOG.
+ * @param gradient_lst The list of extracted gradients.
 */
 void FeaturesExtraction::extractHOG(const Size wsize, const vector<Mat> &img_lst, vector<Mat> &gradient_lst)
 {
@@ -43,16 +43,13 @@ void FeaturesExtraction::extractHOG(const Size wsize, const vector<Mat> &img_lst
         }
     }
 };
-/*
-    Function to convert extracted features in order to be used as training data for the models.
-
-    Convert training/testing set to be used by OpenCV Machine Learning algorithms.
-    TrainData is a matrix of size (#samples x max(#cols,#rows) per samples), in 32FC1.
-    Transposition of samples are made if needed.
+/**
+ * Function to convert the extracted features in order to be used as training data for the models.
+ * @param train_samples 
+ * @param trainData
 */
 void FeaturesExtraction::convert_to_ml(const vector<Mat> &train_samples, Mat &trainData)
 {
-    //--Convert data
     const int rows = (int)train_samples.size();
     const int cols = (int)std::max(train_samples[0].cols, train_samples[0].rows);
     Mat tmp(1, cols, CV_32FC1); //< used for transposition if needed

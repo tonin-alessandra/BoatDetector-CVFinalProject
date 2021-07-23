@@ -1,5 +1,5 @@
 /** 
-    This class performs all utils operations.
+    Definition of a class that performs all utilities operations.
     @file Utils.cpp
     @author Alessandra Tonin
 */
@@ -17,12 +17,12 @@ using namespace std;
 Utils::Utils(){};
 
 /**
- * Parse txt file of ground truth
- */ 
-vector<int> Utils::parseTxtGT(String pathOfGTFile, String pathOfGTFolder){
+ * Parse txt file to load the ground truth.
+ */
+vector<int> Utils::parseTxtGT(String pathOfGTFile, String pathOfGTFolder)
+{
     ifstream file_variable;
-    file_variable.open(pathOfGTFolder+pathOfGTFile);
-
+    file_variable.open(pathOfGTFolder + pathOfGTFile);
     string line;
     vector<int> groundTruth;
     int rows = 0;
@@ -31,12 +31,9 @@ vector<int> Utils::parseTxtGT(String pathOfGTFile, String pathOfGTFolder){
     {
         while (getline(file_variable, line))
         {
-
             istringstream stream(line);
-
             char separator = ';';
             string value;
-           
             while (getline(stream, value, ';'))
             {
                 if (value.find(boat) != string::npos)

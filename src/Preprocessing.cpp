@@ -33,12 +33,11 @@ void Preprocessing::loadImages(const String &dirname, vector<Mat> &img_lst)
         Mat img = imread(files[i]);
         if (img.empty())
         {
-            cout << files[i] << " is invalid!" << endl; 
+            cout << files[i] << " is invalid!" << endl;
             continue;
         }
         img_lst.push_back(img);
     }
-
 };
 
 /**
@@ -50,7 +49,6 @@ void Preprocessing::denoiseImgs(vector<Mat> imgs, vector<Mat> denoisImgs)
 {
     for (int i = 0; i < imgs.size(); i++)
     {
-        //GaussianBlur(imgs[i], imgs[i], Size(0,0), 10);
         Mat img = imgs[i];
         fastNlMeansDenoisingColored(img, img);
         denoisImgs.push_back(img);
@@ -62,7 +60,6 @@ void Preprocessing::denoiseImgs(vector<Mat> imgs, vector<Mat> denoisImgs)
     @param imgs The vector of images to resize.
     @param newSize The new size to give to images.
     @return A vector of resized images.
-
 */
 vector<Mat> Preprocessing::resizeImgs(vector<Mat> imgs, Size newSize)
 {

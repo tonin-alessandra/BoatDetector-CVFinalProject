@@ -1,5 +1,5 @@
 /** 
-    This is a boat detector based on classical computer vision techniques.
+    This is a boat detector program based on classical computer vision techniques.
     @file main.cpp
     @author Alessandra Tonin
 */
@@ -21,11 +21,11 @@ using namespace cv::ml;
 using namespace std;
 
 /**
- * Main method
+ * Main method.
  */
 int main(int argc, char **argv)
 {
-    // Parse the input given on the Command Line
+    // Parse the input given on the Command Line.
     const char *keys =
         {
             "{pd    |     | path of directory contains positive images}"
@@ -34,13 +34,7 @@ int main(int argc, char **argv)
             "{t     |true| test a trained detector}"};
     CommandLineParser parser(argc, argv, keys);
 
-    String pos_dir = "C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/boat";
-    String neg_dir = "C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/named_neg";
-    //String test_dir = "testSet/images";
-    String test_dirk = "C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/FINAL_DATASET/FINAL_DATASET/TEST_DATASET/kaggle";
-    String test_dirv = "C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/FINAL_DATASET/FINAL_DATASET/TEST_DATASET/venice";
     String obj_det_filename = "HOGboats.xml";
-    bool test_detector = true;
     bool train_twice = true;
 
     Preprocessing preprocessor = Preprocessing();
@@ -54,35 +48,32 @@ int main(int argc, char **argv)
     vector<int> labels;
     Mat train_data;
     HOGDescriptor hog;
+    String groundTruthPath = "testSet/ground_truth/";
 
-    /*// Parsing of cmd line
+    // Parsing of cmd line.
     String pos_dir = parser.get<String>("pd");
     String neg_dir = parser.get<String>("nd");
     String test_dir = parser.get<String>("td");
-    bool test_detector = parser.get< bool >( "t" );
+    bool test_detector = parser.get<bool>("t");
 
     if ((pos_dir.empty() || neg_dir.empty()) && !(test_detector))
     {
-        pos_dir = "C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/boat";
-        neg_dir = "C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/named_neg";
+        // These lines are an example of paths in case of problems with the command line inputs.
+        //pos_dir = "C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/boat";
+        //neg_dir = "C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/named_neg";
     }
     if (test_dir.empty())
     {
         test_dir = "testSet/images";
     }
-    if (test_detector.empty())
+    if (!test_detector)
     {
         test_detector = true;
-    }*/
-
-
+    }
     if (test_detector)
     {
         vector<Mat> test;
-        String venGTPath = "testSet/venice_labels_txt/";
-        String kagGTPath = "testSet/kaggle_labels_txt/";
-
-        preprocessor.loadImages(test_dirk, test);
+        preprocessor.loadImages(test_dir, test);
 
         // ***********************************for each test image, load the ground truth from txt file
         vector<vector<Rect>> totGT;
@@ -96,7 +87,7 @@ int main(int argc, char **argv)
             else
                 filename = to_string(i) + ".txt";
 
-            vector<int> gtCoords = utilities.parseTxtGT(filename, kagGTPath);
+            vector<int> gtCoords = utilities.parseTxtGT(filename, groundTruthPath);
 
             for (int j = 0; j < gtCoords.size(); j += 4)
             {
@@ -104,9 +95,8 @@ int main(int argc, char **argv)
             }
             totGT.push_back(currentGtRects);
         }
-        cout << "txt loaded";
         //**********************************************end of gt loading
-        detector.testTrainedDetector(obj_det_filename, test, "zzz");
+        detector.testTrainedDetector(obj_det_filename, test);
         vector<vector<Rect>> detectedRect = detector.getRects();
         vector<vector<double>> detectedScores = detector.getConfidenceScores();
         // *************************perform nms
@@ -129,30 +119,31 @@ int main(int argc, char **argv)
         //*************************end of iou evaluation
 
         //**************** draw detected bb and gt bb
-        cout << "a";
+
         for (int i = 0; i < test.size(); i++)
         {
             Mat image = test[i];
             for (int j = 0; j < nmsResRects[i].size(); j++)
             {
-                //green for detected
+                // Draw in green all the detected rectangles.
                 rectangle(image, nmsResRects[i][j], Scalar(0, 255, 0), 5);
                 putText(image, to_string(iouScores[i][j]), nmsResRects[i][j].tl(), HersheyFonts::FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 2);
             }
-            //draw gt (just for test)
+
             for (int u = 0; u < totGT[i].size(); u++)
             {
-                //blue for gt
-                cout << i << " " << u << "\n";
+                // Draw in blue all the ground-truth rectangles.
                 rectangle(image, totGT[i][u], Scalar(255, 0, 0), 5);
             }
-            imwrite("results/kag" + to_string(i) + ".jpg", image);
-            imshow("img", image);
+            imwrite("results/" + to_string(i) + ".jpg", image);
+            imshow("Image", image);
             waitKey();
         }
         //**************** end of drawing
         exit(0);
     }
+
+    // The code from this point is needed just for the creation and training of the model.
 
     // Load and process positive images set.
     clog << "Positive images are being loaded...";
@@ -171,7 +162,6 @@ int main(int argc, char **argv)
         return 1;
     }
     Size pos_image_size = pos_lst[0].size();
-
     for (size_t i = 0; i < pos_lst.size(); ++i)
     {
         if (pos_lst[i].size() != pos_image_size)
@@ -189,7 +179,7 @@ int main(int argc, char **argv)
     preprocessor.denoiseImgs(full_neg_lst, full_neg_lst);
     clog << "...[done] " << full_neg_lst.size() << " files." << endl;
 
-    // Compute Histogram of Gradients for both positive and negative images.
+    // Compute Histogram of Oriented Gradients for both positive and negative images.
     clog << "Computing HoG for positive images...";
     hogExtractor.extractHOG(pos_image_size, pos_lst, gradient_lst);
     size_t positive_count = gradient_lst.size();
@@ -197,14 +187,12 @@ int main(int argc, char **argv)
     clog << "...[done] ( positive images count : " << positive_count << " )" << endl;
     clog << "Computing HoG for negative images...";
     hogExtractor.extractHOG(pos_image_size, full_neg_lst, gradient_lst);
-
-    // write explanation.
     size_t negative_count = gradient_lst.size() - positive_count;
     labels.insert(labels.end(), negative_count, -1);
     CV_Assert(positive_count < labels.size());
     clog << "...[done] ( negative images count : " << negative_count << " )" << endl;
 
-    // Prepara data for training phase.
+    // Prepare data for the training phase.
     hogExtractor.convert_to_ml(gradient_lst, train_data);
 
     // Create and train the SVM model.
@@ -217,7 +205,6 @@ int main(int argc, char **argv)
         clog << "Testing trained detector on negative images. This might take a few minutes...";
         HOGDescriptor my_hog;
         my_hog.winSize = pos_image_size;
-        // Set the trained svm to my_hog
         my_hog.setSVMDetector(detector.get_svm_detector(svm));
         vector<Rect> detections;
         vector<double> foundWeights;
@@ -257,42 +244,68 @@ int main(int argc, char **argv)
     hog.winSize = pos_image_size;
     hog.setSVMDetector(detector.get_svm_detector(svm));
     hog.save(obj_det_filename);
-    String namek = "resk";
-    String namev = "resv";
-    //detector.testTrainedDetector(obj_det_filename, test_dirk, namek);
-    //detector.testTrainedDetector(obj_det_filename, test_dirv, namev);
     vector<Mat> test;
-    preprocessor.loadImages(test_dirk, test);
-    cout << "w";
-    detector.testTrainedDetector(obj_det_filename, test, "zzz");
-    cout << "y";
+    preprocessor.loadImages(test_dir, test);
+
+    // For each test image, load the ground truth from txt file.
+    vector<vector<Rect>> totGT;
+    for (int i = 0; i < test.size(); i++)
+    {
+        vector<Rect> currentGtRects;
+        String filename;
+        if (i < 10)
+            filename = "0" + to_string(i) + ".txt";
+        else
+            filename = to_string(i) + ".txt";
+        vector<int> gtCoords = utilities.parseTxtGT(filename, groundTruthPath);
+        for (int j = 0; j < gtCoords.size(); j += 4)
+        {
+            currentGtRects.push_back(Rect(gtCoords[j], gtCoords[j + 2], gtCoords[j + 1] - gtCoords[j], gtCoords[j + 3] - gtCoords[j + 2]));
+        }
+        totGT.push_back(currentGtRects);
+    }
+
+    detector.testTrainedDetector(obj_det_filename, test);
     vector<vector<Rect>> detectedRect = detector.getRects();
     vector<vector<double>> detectedScores = detector.getConfidenceScores();
 
-    cout << "z";
+    // Perform Non-Maxima Suppression.
     vector<vector<Rect>> nmsResRects;
-    cout << "e";
     for (int i = 0; i < detectedRect.size(); i++)
     {
-        cout << "q";
         vector<Rect> tmp;
         postprocessor.nonMaxSuppression(detectedRect[i], detectedScores[i], tmp, 0.03, 0, 0);
         nmsResRects.push_back(tmp);
     }
-    cout << "a";
+
+    // Evaluate iou.
+    vector<vector<float>> iouScores;
+    for (int g = 0; g < nmsResRects.size(); g++)
+    {
+        vector<float> scores = postprocessor.testPerformance(totGT[g], nmsResRects[g]);
+        iouScores.push_back(scores);
+    }
+
+    // Draw detected bounding boxes and true ones.
+
     for (int i = 0; i < test.size(); i++)
     {
         Mat image = test[i];
-        cout << "b";
         for (int j = 0; j < nmsResRects[i].size(); j++)
         {
-            //red for detected
-            rectangle(image, nmsResRects[i][j], Scalar(0, 0, 255), 10);
-            cout << "c";
+            // Draw in green all the detected rectangles.
+            rectangle(image, nmsResRects[i][j], Scalar(0, 255, 0), 5);
+            putText(image, to_string(iouScores[i][j]), nmsResRects[i][j].tl(), HersheyFonts::FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 2);
         }
-        imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/kkk" + to_string(i) + ".jpg", image);
-        imshow("img", image);
+
+        for (int u = 0; u < totGT[i].size(); u++)
+        {
+            // Draw in blue all the ground-truth rectangles.
+            rectangle(image, totGT[i][u], Scalar(255, 0, 0), 5);
+        }
+        imwrite("results/" + to_string(i) + ".jpg", image);
+        imshow("Image", image);
         waitKey();
     }
-    return 0;
+    return (0);
 }

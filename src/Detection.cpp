@@ -1,6 +1,5 @@
-// svm classifier, training and prediction, detection
 /** 
-    This class performs the  detection of objects based on the previously extracted features.
+    This class performs the detection of objects based on the previously extracted features.
     @file Detection.cpp
     @author Alessandra Tonin
 */
@@ -16,17 +15,20 @@ using namespace std;
 using namespace ml;
 
 /**
-	Constructor
+	Constructor.
 */
 Detection::Detection(){};
 
 /**
-	Create svm and train it
+ * Create svm model and train it.
+ * @param data Data used to construct the classifier.
+ * @param label labels used to construct the classifier.
+ * @return A pointer to the created SVM model.
 */
 Ptr<SVM> Detection::createSVM(Mat data, vector<int> label)
 {
-	Ptr<SVM> svm = SVM::create();
-    /* Default values to train SVM */
+    Ptr<SVM> svm = SVM::create();
+    // Default values to train SVM.
     svm->setType(SVM::EPS_SVR);
     svm->setKernel(SVM::LINEAR);
     svm->setCoef0(0.0);
@@ -37,17 +39,17 @@ Ptr<SVM> Detection::createSVM(Mat data, vector<int> label)
     svm->setP(0.1);
     svm->setC(0.01);
     svm->train(data, ROW_SAMPLE, label);
-	return svm;
+    return svm;
 };
 /**
-write comment
+ * Gets an HOG based detector.
+ * @param svm The model of the SVM classifier used for detection.
+ * @return The trained detector. 
 */
 vector<float> Detection::get_svm_detector(const Ptr<SVM> &svm)
 {
-    // get the support vectors
     Mat suppVecs = svm->getSupportVectors();
     const int sv_total = suppVecs.rows;
-    // get the decision function
     Mat alpha, suppVecIdx;
     double rho = svm->getDecisionFunction(0, alpha, suppVecIdx);
     CV_Assert(alpha.total() == 1 && suppVecIdx.total() == 1 && sv_total == 1);
@@ -60,19 +62,19 @@ vector<float> Detection::get_svm_detector(const Ptr<SVM> &svm)
     return hog_detector;
 }
 /**
-Write comment
+ * Test the trained detector on a set of new images.
+ * @param obj_det_filename The name of the detector to test.
+ * @param testImgs The images used as test set.
 */
-void Detection::testTrainedDetector(String obj_det_filename, vector<Mat> testImgs, String resultName)
+void Detection::testTrainedDetector(String obj_det_filename, vector<Mat> testImgs)
 {
     cout << "Testing trained detector..." << endl;
     HOGDescriptor hog;
     hog.load(obj_det_filename);
-
     obj_det_filename = "testing " + obj_det_filename;
-
     vector<vector<Rect>> totalDetections;
     vector<vector<double>> totalScores;
-    for (int i = 0; i<testImgs.size(); i++)
+    for (int i = 0; i < testImgs.size(); i++)
     {
         Mat img;
         if (i < testImgs.size())
@@ -88,27 +90,24 @@ void Detection::testTrainedDetector(String obj_det_filename, vector<Mat> testImg
         hog.detectMultiScale(img, detections, foundWeights, 0.5, Size(3, 3));
         totalDetections.push_back(detections);
         totalScores.push_back(foundWeights);
-        /*for (size_t j = 0; j < detections.size(); j++)
-        {
-            Scalar color = Scalar(0, foundWeights[j] * foundWeights[j] * 200, 0);
-            rectangle(img, detections[j], color, img.cols / 400 + 1);
-            putText(img, to_string(foundWeights[j]), detections[j].tl(), HersheyFonts::FONT_HERSHEY_SIMPLEX,1,Scalar(255,255,255),2 );
-        }*/
-        //imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/"+ resultName + to_string(i) + ".jpg", img);
     }
     totFoundRects = totalDetections;
-    totConfScores= totalScores;
+    totConfScores = totalScores;
 }
 /**
- * 
+ * Retrieves the predicted rectangles.
+ * @returns The predicted rectangles for the images of the test set.
  */
-vector<vector<Rect>> Detection::getRects(){
+vector<vector<Rect>> Detection::getRects()
+{
     return totFoundRects;
 }
 
 /**
- * 
+ * Retrieves the confidence scores of the predicted rectangles.
+ * @returns The confidence scores of the predicted rectangles for the images of the test set.
  */
-vector<vector<double>> Detection::getConfidenceScores(){
+vector<vector<double>> Detection::getConfidenceScores()
+{
     return totConfScores;
 }
