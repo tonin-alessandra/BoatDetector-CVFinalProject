@@ -19,9 +19,9 @@ Utils::Utils(){};
 /**
  * Parse txt file of ground truth
  */ 
-vector<int> Utils::parseTxtGT(String pathOfTxt){
+vector<int> Utils::parseTxtGT(String pathOfGTFile, String pathOfGTFolder){
     ifstream file_variable;
-    file_variable.open(pathOfTxt);
+    file_variable.open(pathOfGTFolder+pathOfGTFile);
 
     string line;
     vector<int> groundTruth;

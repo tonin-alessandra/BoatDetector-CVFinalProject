@@ -88,12 +88,12 @@ void Detection::testTrainedDetector(String obj_det_filename, vector<Mat> testImg
         hog.detectMultiScale(img, detections, foundWeights, 0.5, Size(3, 3));
         totalDetections.push_back(detections);
         totalScores.push_back(foundWeights);
-        for (size_t j = 0; j < detections.size(); j++)
+        /*for (size_t j = 0; j < detections.size(); j++)
         {
             Scalar color = Scalar(0, foundWeights[j] * foundWeights[j] * 200, 0);
             rectangle(img, detections[j], color, img.cols / 400 + 1);
             putText(img, to_string(foundWeights[j]), detections[j].tl(), HersheyFonts::FONT_HERSHEY_SIMPLEX,1,Scalar(255,255,255),2 );
-        }
+        }*/
         //imwrite("C:/Users/ASUS/Documents/magistrale/first_year/computer_vision/final_project/Tonin_FinalProject/results/"+ resultName + to_string(i) + ".jpg", img);
     }
     totFoundRects = totalDetections;
